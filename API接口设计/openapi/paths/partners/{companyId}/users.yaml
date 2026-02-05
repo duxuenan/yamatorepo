@@ -1,0 +1,41 @@
+get:
+  tags:
+    - Partners
+  summary: パートナーユーザー一覧取得
+  description: 指定した会社IDのパートナーユーザー一覧を取得します
+  parameters:
+    - $ref: '../../../components/parameters/common.yaml#/components/parameters/CompanyIdParam'
+  responses:
+    '200':
+      description: 取得成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "取得成功"
+              data:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '../../../components/schemas/partners.yaml#/components/schemas/PartnerUser'
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"
+    '404':
+      description: 会社が見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '../../../openapi.yaml#/components/schemas/ErrorResponse'

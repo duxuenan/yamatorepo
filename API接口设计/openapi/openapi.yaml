@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  title: 大賀輸送新システム API
+  description: |
+    大賀輸送新システムのWebアプリケーションAPI定義書
+    
+    ## 認証
+    すべてのAPIはBearer Token認証が必要です。
+    AuthorizationヘッダーにJWTトークンを設定してください。
+    
+    ## レスポンス形式
+    すべてのAPIは統一されたレスポンス形式を使用します。
+    
+    ## エラーハンドリング
+    エラー時はsuccess: falseとなり、codeとmessageに詳細が含まれます。
+  version: 1.0.0
+  contact:
+    name: 大賀輸送 IT推進部
+    email: it-support@ohga.co.jp
+
+servers:
+  - url: https://api.yamato-transport.co.jp/api/v1
+    description: 本番環境
+  - url: https://api-test.yamato-transport.co.jp/api/v1
+    description: テスト環境
+  - url: http://localhost:8080/api/v1
+    description: 開発環境
+
+tags:
+  - name: Authentication
+    description: 認証関連API
+  - name: Partners
+    description: パートナー管理API
+  - name: Orders
+    description: 発注管理API
+  - name: Completed Orders
+    description: 実績管理API
+  - name: Billings
+    description: 請求管理API
+  - name: Uploads
+    description: ファイルアップロードAPI
+  - name: Action History
+    description: アクション履歴API
+  - name: Base Accounts
+    description: ベースアカウントAPI
+  - name: Master Data
+    description: マスタデータAPI
+  - name: External
+    description: 外部システム連携API
+
+paths:
+  /auth/login:
+    $ref: './paths/auth/login.yaml'
+  /auth/logout:
+    $ref: './paths/auth/logout.yaml'
+  /auth/refresh:
+    $ref: './paths/auth/refresh.yaml'
+  
+  /partners/search:
+    $ref: './paths/partners/search.yaml'
+  /partners/{companyId}:
+    $ref: './paths/partners/{companyId}.yaml'
+  /partners/{companyId}/users:
+    $ref: './paths/partners/{companyId}/users.yaml'
+  
+  /orders/search:
+    $ref: './paths/orders/search.yaml'
+  /orders/{orderId}:
+    $ref: './paths/orders/{orderId}.yaml'
+  /orders/{orderId}/instructions:
+    $ref: './paths/orders/{orderId}/instructions.yaml'
+  
+  /completed-orders/search:
+    $ref: './paths/completed-orders/search.yaml'
+  /completed-orders/{completedOrderId}:
+    $ref: './paths/completed-orders/{completedOrderId}.yaml'
+  
+  /billings/search:
+    $ref: './paths/billings/search.yaml'
+  /billings/{billingId}:
+    $ref: './paths/billings/{billingId}.yaml'
+  
+  /base-accounts/search:
+    $ref: './paths/base-accounts/search.yaml'
+  /base-accounts/{userId}:
+    $ref: './paths/base-accounts/{userId}.yaml'
+  
+  /action-history/search:
+    $ref: './paths/action-history/search.yaml'
+  
+  /uploads:
+    $ref: './paths/uploads/upload.yaml'
+  /uploads/history:
+    $ref: './paths/uploads/history.yaml'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer Token認証
+  
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        code:
+          type: string
+          example: SUCCESS
+        message:
+          type: string
+          example: "処理が成功しました"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-02-xxT10:30:00Z"
+    
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: "バリデーションエラーが発生しました"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-02-xxT10:30:00Z"
+    
+    PaginationRequest:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        sort:
+          type: string
+        sortOrder:
+          type: string
+          enum: [asc, desc]
+    
+    PaginationResponse:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 20
+        totalItems:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 5
+        hasNext:
+          type: boolean
+          example: true
+        hasPrevious:
+          type: boolean
+          example: false
+
+security:
+  - bearerAuth: []

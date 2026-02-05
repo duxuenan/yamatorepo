@@ -1,0 +1,108 @@
+# パートナースキーマ定義
+
+Partner:
+  type: object
+  properties:
+    companyId:
+      type: string
+      description: 会社ID
+      example: "C001"
+    companyName:
+      type: string
+      description: 会社名
+      example: "大賀輸送株式会社"
+    companyPhone:
+      type: string
+      description: 電話番号
+      example: "03-1234-5678"
+    systemUse:
+      type: boolean
+      description: システム利用フラグ
+      example: true
+    instructionText:
+      type: string
+      description: 指示書表示文言
+      example: "文言1"
+    userCount:
+      type: integer
+      description: ユーザー数
+      example: 5
+    lastLoginAt:
+      type: string
+      format: date-time
+      description: 最終ログイン日時
+      example: "2026-02-xxT10:30:00Z"
+
+PartnerDetail:
+  type: object
+  allOf:
+    - $ref: '#/components/schemas/Partner'
+    - type: object
+      properties:
+        companyCodes:
+          type: array
+          items:
+            type: string
+          description: 会社コードリスト
+          example: ["ABC001", "ABC002"]
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartnerUser'
+          description: ユーザーリスト
+
+PartnerUser:
+  type: object
+  properties:
+    userId:
+      type: string
+      description: ユーザーID
+      example: "PU001"
+    userName:
+      type: string
+      description: ユーザー名
+      example: "山田 花子"
+    email:
+      type: string
+      format: email
+      description: メールアドレス
+      example: "yamada@company.co.jp"
+    roleId:
+      type: string
+      description: ロールID
+      example: "PARTNER_USER"
+    isActive:
+      type: boolean
+      description: 有効フラグ
+      example: true
+    lastLoginAt:
+      type: string
+      format: date-time
+      description: 最終ログイン日時
+      example: "2026-02-xxT10:30:00Z"
+
+PartnerSearchResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    code:
+      type: string
+      example: SUCCESS
+    message:
+      type: string
+      example: "検索成功"
+    data:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Partner'
+        pagination:
+          $ref: '#/components/schemas/PaginationResponse'
+    timestamp:
+      type: string
+      format: date-time
+      example: "2026-02-xxT10:30:00Z"

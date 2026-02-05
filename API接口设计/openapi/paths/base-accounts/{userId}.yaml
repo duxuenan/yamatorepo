@@ -1,0 +1,41 @@
+get:
+  tags:
+    - Base Accounts
+  summary: ベースアカウント詳細取得
+  description: 指定したユーザーIDのベースアカウント詳細情報を取得します
+  parameters:
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: ユーザーID
+  responses:
+    '200':
+      description: 取得成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "取得成功"
+              data:
+                $ref: '../../components/schemas/common.yaml#/components/schemas/User'
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"
+    '404':
+      description: ユーザーが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'

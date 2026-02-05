@@ -1,0 +1,92 @@
+get:
+  tags:
+    - Partners
+  summary: パートナー詳細取得
+  description: 指定した会社IDのパートナー詳細情報を取得します
+  parameters:
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/CompanyIdParam'
+  responses:
+    '200':
+      description: 取得成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "取得成功"
+              data:
+                $ref: '../../components/schemas/partners.yaml#/components/schemas/PartnerDetail'
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"
+    '404':
+      description: パートナーが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'
+
+put:
+  tags:
+    - Partners
+  summary: パートナー更新
+  description: 指定した会社IDのパートナー情報を更新します
+  parameters:
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/CompanyIdParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            companyName:
+              type: string
+              description: 会社名
+            companyPhone:
+              type: string
+              description: 電話番号
+            systemUse:
+              type: boolean
+              description: システム利用フラグ
+            instructionText:
+              type: string
+              description: 指示書表示文言
+  responses:
+    '200':
+      description: 更新成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "更新成功"
+              data:
+                $ref: '../../components/schemas/partners.yaml#/components/schemas/PartnerDetail'
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"
+    '404':
+      description: パートナーが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'

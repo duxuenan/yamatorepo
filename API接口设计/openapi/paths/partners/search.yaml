@@ -1,0 +1,36 @@
+get:
+  tags:
+    - Partners
+  summary: パートナー検索
+  description: パートナー会社の一覧を検索条件で取得します
+  parameters:
+    - name: companyCode
+      in: query
+      schema:
+        type: string
+      description: 会社コード（部分一致）
+    - name: companyName
+      in: query
+      schema:
+        type: string
+      description: 会社名（部分一致）
+    - name: systemUse
+      in: query
+      schema:
+        type: boolean
+      description: システム利用フラグ
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/PageParam'
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/PageSizeParam'
+  responses:
+    '200':
+      description: 検索成功
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/partners.yaml#/components/schemas/PartnerSearchResponse'
+    '400':
+      description: リクエストパラメータエラー
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大贺运输新系统 - API文档（统一版）</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
+    <style>
+        body { margin: 0; padding: 20px; font-family: sans-serif; background: #f5f5f5; }
+        .header { background: #1a237e; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { margin: 0; }
+        .header p { margin: 10px 0 0; opacity: 0.9; }
+        .info { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; border-radius: 4px; margin-bottom: 20px; }
+        .swagger-ui .topbar { display: none !important; }
+        #swagger-ui { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>大贺运输新系统 API文档</h1>
+        <p>OpenAPI 3.0 规范 - 18个API端点</p>
+        <p style="font-size: 14px;">认证: 点击Authorize按钮输入token（测试用: "test-token"）</p>
+    </div>
+
+    <div class="info">
+        <strong>使用方法:</strong>
+        <ul>
+            <li>点击右上角的 <strong>Authorize</strong> 按钮</li>
+            <li>在Token输入框中输入 <code>test-token</code></li>
+            <li>点击 Authorize → Close</li>
+            <li>可以点击任意API的 "Try it out" 进行测试</li>
+        </ul>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        const spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "大贺运输新系统 API",
+                "description": "大贺运输新系统的REST API接口定义",
+                "version": "1.0.0",
+                "contact": {
+                    "name": "大贺运输 IT推进部",
+                    "email": "it-support@ohga.co.jp"
+                }
+            },
+            "servers": [
+                {
+                    "url": "http://localhost:8080/api/v1",
+                    "description": "开发环境"
+                },
+                {
+                    "url": "https://api-test.yamato-transport.co.jp/api/v1",
+                    "description": "测试环境"
+                },
+                {
+                    "url": "https://api.yamato-transport.co.jp/api/v1",
+                    "description": "生产环境"
+                }
+            ],
+            "tags": [
+                {"name": "Authentication", "description": "认证"},
+                {"name": "Partners", "description": "合作伙伴管理"},
+                {"name": "Orders", "description": "订单管理"},
+                {"name": "Completed Orders", "description": "业绩管理"},
+                {"name": "Billings", "description": "账单管理"},
+                {"name": "Base Accounts", "description": "基地账户"},
+                {"name": "Action History", "description": "操作历史"},
+                {"name": "Uploads", "description": "文件上传"}
+            ],
+            "paths": {
+                "/auth/login": {
+                    "post": {
+                        "tags": ["Authentication"],
+                        "summary": "登录",
+                        "description": "使用邮箱和密码登录",
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "required": ["email", "password"],
+                                        "properties": {
+                                            "email": {"type": "string", "format": "email", "example": "tanaka@company.co.jp"},
+                                            "password": {"type": "string", "format": "password", "example": "password123"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "登录成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "code": {"type": "string", "example": "SUCCESS"},
+                                                "message": {"type": "string", "example": "登录成功"},
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "token": {"type": "string", "example": "test-token"},
+                                                        "refreshToken": {"type": "string", "example": "refresh-token"},
+                                                        "user": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "userId": {"type": "string", "example": "BA001"},
+                                                                "userName": {"type": "string", "example": "田中 太郎"},
+                                                                "email": {"type": "string", "example": "tanaka@company.co.jp"},
+                                                                "roleId": {"type": "string", "example": "ADMIN"}
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/auth/logout": {
+                    "post": {
+                        "tags": ["Authentication"],
+                        "summary": "登出",
+                        "security": [{"bearerAuth": []}],
+                        "responses": {
+                            "200": {
+                                "description": "登出成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "message": {"type": "string", "example": "登出成功"}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/auth/refresh": {
+                    "post": {
+                        "tags": ["Authentication"],
+                        "summary": "刷新token",
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "required": ["refreshToken"],
+                                        "properties": {
+                                            "refreshToken": {"type": "string", "example": "refresh-token"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "token刷新成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "token": {"type": "string", "example": "new-test-token"},
+                                                        "refreshToken": {"type": "string", "example": "new-refresh-token"}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/partners/search": {
+                    "get": {
+                        "tags": ["Partners"],
+                        "summary": "合作伙伴搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "companyCode", "in": "query", "schema": {"type": "string"}},
+                            {"name": "companyName", "in": "query", "schema": {"type": "string"}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "companyId": {"type": "string", "example": "C001"},
+                                                                    "companyName": {"type": "string", "example": "大贺运输株式会社"},
+                                                                    "companyPhone": {"type": "string", "example": "03-1234-5678"},
+                                                                    "systemUse": {"type": "boolean", "example": true}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/partners/{companyId}": {
+                    "get": {
+                        "tags": ["Partners"],
+                        "summary": "合作伙伴详情",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [{"name": "companyId", "in": "path", "required": true, "schema": {"type": "string"}}],
+                        "responses": {
+                            "200": {
+                                "description": "获取成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "companyId": {"type": "string", "example": "C001"},
+                                                        "companyName": {"type": "string", "example": "大贺运输株式会社"},
+                                                        "users": {"type": "array", "items": {"type": "object"}}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/orders/search": {
+                    "get": {
+                        "tags": ["Orders"],
+                        "summary": "订单搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "companyId", "in": "query", "schema": {"type": "string"}},
+                            {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["pending", "accepted", "rejected", "expired", "cancelled"]}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "orderId": {"type": "string", "example": "ORD-2026-001"},
+                                                                    "companyId": {"type": "string", "example": "C001"},
+                                                                    "status": {"type": "string", "example": "pending"}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/orders/{orderId}": {
+                    "get": {
+                        "tags": ["Orders"],
+                        "summary": "订单详情",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [{"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}],
+                        "responses": {
+                            "200": {
+                                "description": "获取成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"orderId": {"type": "string"}, "companyId": {"type": "string"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/completed-orders/search": {
+                    "get": {
+                        "tags": ["Completed Orders"],
+                        "summary": "业绩搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "companyId", "in": "query", "schema": {"type": "string"}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"items": {"type": "array"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/billings/search": {
+                    "get": {
+                        "tags": ["Billings"],
+                        "summary": "账单搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "companyId", "in": "query", "schema": {"type": "string"}},
+                            {"name": "status", "in": "query", "schema": {"type": "string"}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"items": {"type": "array"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/base-accounts/search": {
+                    "get": {
+                        "tags": ["Base Accounts"],
+                        "summary": "基地账户搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "userId", "in": "query", "schema": {"type": "string"}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"items": {"type": "array"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/action-history/search": {
+                    "get": {
+                        "tags": ["Action History"],
+                        "summary": "操作历史搜索",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "userId", "in": "query", "schema": {"type": "string"}},
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"items": {"type": "array"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/uploads": {
+                    "post": {
+                        "tags": ["Uploads"],
+                        "summary": "文件上传",
+                        "security": [{"bearerAuth": []}],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "multipart/form-data": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "file": {"type": "string", "format": "binary"},
+                                            "type": {"type": "string", "enum": ["orders", "partners", "billings"]}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "上传成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "message": {"type": "string", "example": "上传成功"}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/uploads/history": {
+                    "get": {
+                        "tags": ["Uploads"],
+                        "summary": "上传历史",
+                        "security": [{"bearerAuth": []}],
+                        "parameters": [
+                            {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer", "default": 20}}
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "搜索成功",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {"type": "boolean", "example": true},
+                                                "data": {"type": "object", "properties": {"items": {"type": "array"}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "components": {
+                "securitySchemes": {
+                    "bearerAuth": {
+                        "type": "http",
+                        "scheme": "bearer",
+                        "bearerFormat": "JWT"
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                spec: spec,
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout",
+                docExpansion: 'list',
+                filter: true,
+                tryItOutEnabled: true,
+                persistAuthorization: true
+            });
+        };
+    </script>
+</body>
+</html>

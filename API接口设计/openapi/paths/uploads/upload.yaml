@@ -1,0 +1,52 @@
+post:
+  tags:
+    - Uploads
+  summary: ファイルアップロード
+  description: CSVファイルをアップロードします
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+              description: アップロードするCSVファイル
+            type:
+              type: string
+              enum: [orders, partners, billings]
+              description: ファイルタイプ
+  responses:
+    '200':
+      description: アップロード成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "アップロード成功"
+              data:
+                type: object
+                properties:
+                  uploadId:
+                    type: string
+                  fileName:
+                    type: string
+                  recordCount:
+                    type: integer
+                  processedCount:
+                    type: integer
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"

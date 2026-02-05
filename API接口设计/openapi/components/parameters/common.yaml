@@ -1,0 +1,85 @@
+# 共通パラメータ定義
+
+PageParam:
+  name: page
+  in: query
+  description: ページ番号（1から開始）
+  required: false
+  schema:
+    type: integer
+    minimum: 1
+    default: 1
+
+PageSizeParam:
+  name: pageSize
+  in: query
+  description: 1ページあたりの件数
+  required: false
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 100
+    default: 20
+
+SortParam:
+  name: sort
+  in: query
+  description: ソート対象フィールド
+  required: false
+  schema:
+    type: string
+
+SortOrderParam:
+  name: sortOrder
+  in: query
+  description: ソート順序
+  required: false
+  schema:
+    type: string
+    enum: [asc, desc]
+    default: asc
+
+CompanyIdParam:
+  name: companyId
+  in: path
+  description: 会社ID
+  required: true
+  schema:
+    type: string
+    example: "C001"
+
+OrderIdParam:
+  name: orderId
+  in: path
+  description: 発注ID
+  required: true
+  schema:
+    type: string
+    example: "ORD-2026-001"
+
+CompletedOrderIdParam:
+  name: completedOrderId
+  in: path
+  description: 実績ID
+  required: true
+  schema:
+    type: string
+    example: "PERF-2026-001"
+
+BillingIdParam:
+  name: billingId
+  in: path
+  description: 請求ID
+  required: true
+  schema:
+    type: string
+    example: "BILL-2026-001"
+
+UserIdParam:
+  name: userId
+  in: path
+  description: ユーザーID
+  required: true
+  schema:
+    type: string
+    example: "BA001"

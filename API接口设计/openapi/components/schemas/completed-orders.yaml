@@ -1,0 +1,109 @@
+# 実績スキーマ定義
+
+CompletedOrder:
+  type: object
+  properties:
+    completedOrderId:
+      type: string
+      description: 実績ID
+      example: "PERF-2026-001"
+    orderId:
+      type: string
+      description: 関連発注ID
+      example: "ORD-2026-001"
+    companyId:
+      type: string
+      description: 会社ID
+      example: "C001"
+    totalAmount:
+      type: number
+      format: decimal
+      description: 合計金額
+      example: 1500000
+    status:
+      type: string
+      enum: [pending, confirmed, rejected]
+      description: ステータス
+      example: "confirmed"
+    completedDate:
+      type: string
+      format: date
+      description: 実績日
+      example: "2026-02-05"
+    confirmedAt:
+      type: string
+      format: date-time
+      description: 確定日時
+      example: "2026-02-xxT10:30:00Z"
+    confirmedBy:
+      type: string
+      description: 確定者
+      example: "BA001"
+
+CompletedOrderDetail:
+  type: object
+  allOf:
+    - $ref: '#/components/schemas/CompletedOrder'
+    - type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompletedOrderItem'
+          description: 実績明細リスト
+
+CompletedOrderItem:
+  type: object
+  properties:
+    itemId:
+      type: string
+      description: 明細ID
+      example: "PERF-ITEM-001"
+    productCode:
+      type: string
+      description: 商品コード
+      example: "PROD001"
+    productName:
+      type: string
+      description: 商品名
+      example: "輸送サービス"
+    quantity:
+      type: integer
+      description: 実績数量
+      example: 100
+    unitPrice:
+      type: number
+      format: decimal
+      description: 単価
+      example: 15000
+    totalPrice:
+      type: number
+      format: decimal
+      description: 合計金額
+      example: 1500000
+
+CompletedOrderSearchResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    code:
+      type: string
+      example: SUCCESS
+    message:
+      type: string
+      example: "検索成功"
+    data:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompletedOrder'
+        pagination:
+          $ref: '#/components/schemas/PaginationResponse'
+    timestamp:
+      type: string
+      format: date-time
+      example: "2026-02-xxT10:30:00Z"

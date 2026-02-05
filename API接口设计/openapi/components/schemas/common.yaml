@@ -1,0 +1,108 @@
+# 共通スキーマ定義
+
+LoginResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    code:
+      type: string
+      example: SUCCESS
+    message:
+      type: string
+      example: "ログイン成功"
+    data:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWTアクセストークン
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          description: リフレッシュトークン
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        user:
+          $ref: '#/components/schemas/User'
+    timestamp:
+      type: string
+      format: date-time
+      example: "2026-02-xxT10:30:00Z"
+
+User:
+  type: object
+  properties:
+    userId:
+      type: string
+      description: ユーザーID
+      example: "BA001"
+    userName:
+      type: string
+      description: ユーザー名
+      example: "田中 太郎"
+    email:
+      type: string
+      format: email
+      description: メールアドレス
+      example: "tanaka@company.co.jp"
+    roleId:
+      type: string
+      description: ロールID
+      example: "ADMIN"
+    roleName:
+      type: string
+      description: ロール名
+      example: "管理者"
+    companyId:
+      type: string
+      description: 会社ID
+      example: "C001"
+    baseId:
+      type: string
+      description: ベースID
+      example: "BASE001"
+    isActive:
+      type: boolean
+      description: 有効フラグ
+      example: true
+    lastLoginAt:
+      type: string
+      format: date-time
+      description: 最終ログイン日時
+      example: "2026-02-xxT10:30:00Z"
+
+JWTPayload:
+  type: object
+  properties:
+    sub:
+      type: string
+      description: ユーザーID
+      example: "BA001"
+    type:
+      type: string
+      enum: [partner, base]
+      description: ユーザータイプ
+      example: "base"
+    permissions:
+      type: array
+      items:
+        type: string
+      description: 権限リスト
+      example: ["READ_ALL", "WRITE_ALL"]
+    companyId:
+      type: string
+      description: 会社ID（パートナー場合）
+      example: "C001"
+    baseId:
+      type: string
+      description: ベースID（ベース場合）
+      example: "BASE001"
+    iat:
+      type: integer
+      description: 発行時刻（Unixタイムスタンプ）
+      example: 1644061800
+    exp:
+      type: integer
+      description: 有効期限（Unixタイムスタンプ）
+      example: 1644065400

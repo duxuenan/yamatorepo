@@ -1,0 +1,54 @@
+post:
+  tags:
+    - Authentication
+  summary: トークン更新
+  description: リフレッシュトークンを使用して新しいアクセストークンを取得します
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - refreshToken
+          properties:
+            refreshToken:
+              type: string
+              description: リフレッシュトークン
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  responses:
+    '200':
+      description: トークン更新成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              code:
+                type: string
+                example: SUCCESS
+              message:
+                type: string
+                example: "トークン更新成功"
+              data:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: 新しいJWTアクセストークン
+                  refreshToken:
+                    type: string
+                    description: 新しいリフレッシュトークン
+              timestamp:
+                type: string
+                format: date-time
+                example: "2026-02-xxT10:30:00Z"
+    '401':
+      description: リフレッシュトークン無効
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'

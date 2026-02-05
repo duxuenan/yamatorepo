@@ -1,0 +1,56 @@
+get:
+  tags:
+    - Billings
+  summary: 請求検索
+  description: 請求情報の一覧を検索条件で取得します
+  parameters:
+    - name: companyId
+      in: query
+      schema:
+        type: string
+      description: 会社ID
+    - name: status
+      in: query
+      schema:
+        type: string
+        enum: [pending, issued, paid, cancelled]
+      description: 請求ステータス
+    - name: issueDateFrom
+      in: query
+      schema:
+        type: string
+        format: date
+      description: 発行日（開始）
+    - name: issueDateTo
+      in: query
+      schema:
+        type: string
+        format: date
+      description: 発行日（終了）
+    - name: dueDateFrom
+      in: query
+      schema:
+        type: string
+        format: date
+      description: 支払期限（開始）
+    - name: dueDateTo
+      in: query
+      schema:
+        type: string
+        format: date
+      description: 支払期限（終了）
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/PageParam'
+    - $ref: '../../components/parameters/common.yaml#/components/parameters/PageSizeParam'
+  responses:
+    '200':
+      description: 検索成功
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/billings.yaml#/components/schemas/BillingSearchResponse'
+    '400':
+      description: リクエストパラメータエラー
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'

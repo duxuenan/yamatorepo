@@ -1,0 +1,38 @@
+post:
+  tags:
+    - Authentication
+  summary: ログイン
+  description: メールアドレスとパスワードでログインし、JWTトークンを取得します
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              description: メールアドレス
+              example: "tanaka@company.co.jp"
+            password:
+              type: string
+              format: password
+              description: パスワード
+              example: "password123"
+  responses:
+    '200':
+      description: ログイン成功
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/common.yaml#/components/schemas/LoginResponse'
+    '401':
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '../../openapi.yaml#/components/schemas/ErrorResponse'
