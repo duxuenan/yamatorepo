@@ -1,0 +1,14 @@
+=== Screen Transition Diagram Analysis ===
+Worksheet name: 画面遷移図 
+Max Row: 67
+Max Column: 46
+Total rows: 67
+Rows with data: 6
+
+=== Rows with Non-Null Values ===
+Row 1: 1/46 non-null values
+Row 2: 1/46 non-null values
+Row 4: 1/46 non-null values
+Row 5: 3/46 non-null values
+Row 50: 1/46 non-null values
+Row 51: 2/46 non-null values

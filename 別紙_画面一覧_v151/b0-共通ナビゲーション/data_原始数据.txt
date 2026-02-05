@@ -1,0 +1,84 @@
+=== b0-共通ナビゲーション Analysis Report ===
+
+Data Shape: (30, 41)
+Rows: 30, Columns: 41
+Rows with data: 24
+Total non-null cells: 29
+
+=== Column Names ===
+1. ■ヤマト運輸様｜ベース業務改善
+2. Unnamed: 1
+3. Unnamed: 2
+4. Unnamed: 3
+5. Unnamed: 4
+6. Unnamed: 5
+7. Unnamed: 6
+8. Unnamed: 7
+9. Unnamed: 8
+10. Unnamed: 9
+11. Unnamed: 10
+12. Unnamed: 11
+13. Unnamed: 12
+14. Unnamed: 13
+15. Unnamed: 14
+16. Unnamed: 15
+17. Unnamed: 16
+18. Unnamed: 17
+19. Unnamed: 18
+20. Unnamed: 19
+21. Unnamed: 20
+22. Unnamed: 21
+23. Unnamed: 22
+24. Unnamed: 23
+25. Unnamed: 24
+26. Unnamed: 25
+27. Unnamed: 26
+28. Unnamed: 27
+29. Unnamed: 28
+30. Unnamed: 29
+31. Unnamed: 30
+32. Unnamed: 31
+33. Unnamed: 32
+34. Unnamed: 33
+35. Unnamed: 34
+36. Unnamed: 35
+37. Unnamed: 36
+38. Unnamed: 37
+39. Unnamed: 38
+40. Unnamed: 39
+41. Unnamed: 40
+
+=== Non-Null Count by Column ===
+Unnamed: 1: 2
+Unnamed: 2: 9
+Unnamed: 38: 2
+Unnamed: 39: 8
+Unnamed: 40: 8
+
+=== Sample Data (First 10 rows) ===
+
+Row 1:
+  Unnamed: 1: b0-共通ナビゲーション
+
+Row 3:
+  Unnamed: 1: ≪PC≫
+
+Row 4:
+  Unnamed: 38: ▼機能概要
+
+Row 5:
+  Unnamed: 2: 配車発注管理
+  Unnamed: 39: ・主要ページへのリンクを共通メニューとして常時表示してナビゲーションする
+
+Row 6:
+  Unnamed: 2: システム
+
+Row 7:
+  Unnamed: 38: ▼項目
+
+Row 8:
+  Unnamed: 2: 発注管理
+  Unnamed: 39: ⑴発注管理：
+
+Row 9:
+  Unnamed: 40: ・「発注管理」のリンクを押下すると、「b2-発注検索」画面に遷移する
