@@ -1,0 +1,84 @@
+﻿分类,页面ID,页面名称,API编号,HTTP方法,API端点,功能描述,共用
+B系列,b1,スタート,1,POST,/api/v1/auth/callback,AzureAD回调处理 (B),
+P系列,p1,スタート,2,POST,/api/v1/auth/login,合作伙伴登录 (P),
+共用,b1/p1,スタート,3,POST,/api/v1/auth/refresh,刷新Token (共用),是
+B系列,b1,スタート,4,POST,/api/v1/auth/logout,登出 (B),
+共用,b1/p1,スタート,5,GET,/api/v1/users/me,获取当前用户信息 (共用),是
+共用,b2/b3/p2/p3,発注検索/発注詳細,6,GET,/api/v1/orders/search,搜索订单 (共用),是
+共用,b2/b3/p2/p3,発注検索/発注詳細,7,GET,/api/v1/orders/{orderId},获取订单详情 (共用),是
+共用,b2/b3/p2/p3,発注検索/発注詳細,8,PUT,/api/v1/orders/{orderId},更新订单 (共用),是
+共用,b2/b3/p2/p3,発注検索/発注詳細,9,PUT,/api/v1/orders/{orderId}/status,更新订单状态 (共用),是
+B系列,b2/b3,発注検索/発注詳細,10,POST,/api/v1/orders/{orderId}/cancel,取消订单 (B),
+P系列,p2/p3,発注検索/発注詳細,11,POST,/api/v1/orders/{orderId}/accept,接受订单 (P),
+P系列,p2/p3,発注検索/発注詳細,12,POST,/api/v1/orders/{orderId}/decline,拒绝订单 (P),
+P系列,p2/p3,発注検索/発注詳細,13,POST,/api/v1/orders/{orderId}/complete,完成订单 (P),
+B系列,b2/b3,発注検索/発注詳細,14,GET,/api/v1/orders/{orderId}/history,获取操作历史 (B),
+共用,b2/b3/p2/p3,発注検索/発注詳細,15,GET,/api/v1/orders/{orderId}/documents,获取文档列表 (共用),是
+B系列,b2/b3,発注検索/発注詳細,16,POST,/api/v1/orders/{orderId}/documents,上传文档 (B),
+P系列,p2/p3,発注検索/発注詳細,17,GET,/api/v1/orders/{orderId}/messages,获取消息 (P),
+P系列,p2/p3,発注検索/発注詳細,18,POST,/api/v1/orders/{orderId}/messages,发送消息 (P),
+B系列,b4/b5,実績検索/実績詳細,19,GET,/api/v1/completed-orders/search,搜索实绩 (B),
+共用,b4/b5,実績検索/実績詳細,20,GET,/api/v1/completed-orders/{completedOrderId},获取实绩详情 (共用),是
+B系列,b4/b5,実績検索/実績詳細,21,PUT,/api/v1/completed-orders/{completedOrderId},更新实绩 (B),
+B系列,b4/b5,実績検索/実績詳細,22,POST,/api/v1/completed-orders/{completedOrderId}/confirm,确认实绩 (B),
+B系列,b4/b5,実績検索/実績詳細,23,POST,/api/v1/completed-orders/{completedOrderId}/reject,拒绝实绩 (B),
+B系列,b4/b5,実績検索/実績詳細,24,GET,/api/v1/completed-orders/{completedOrderId}/documents,获取文档 (B),
+B系列,b4/b5,実績検索/実績詳細,25,POST,/api/v1/completed-orders/{completedOrderId}/documents,上传文档 (B),
+B系列,b4/b5,実績検索/実績詳細,26,DELETE,/api/v1/completed-orders/{completedOrderId}/documents/{docId},删除文档 (B),
+B系列,b4/b5,実績検索/実績詳細,27,GET,/api/v1/completed-orders/{completedOrderId}/history,获取历史 (B),
+P系列,p4,実績確認,28,GET,/api/v1/partners/results,获取业绩列表 (P),
+P系列,p4,実績確認,29,GET,/api/v1/partners/results/{resultId}/daily-costs,获取日別傭車費 (P),
+P系列,p4,実績確認,30,PUT,/api/v1/partners/results/{resultId}/daily-costs/{costId},更新日別傭車費 (P),
+P系列,p4,実績確認,31,GET,/api/v1/partners/results/{resultId}/instructions,获取指示書 (P),
+P系列,p4,実績確認,32,POST,/api/v1/partners/results/{resultId}/confirm,确认业绩 (P),
+P系列,p4,実績確認,33,POST,/api/v1/partners/results/{resultId}/inquiry,确认请求 (P),
+P系列,p4,実績確認,34,GET,/api/v1/partners/results/{resultId}/messages,获取消息 (P),
+P系列,p4,実績確認,35,POST,/api/v1/partners/results/{resultId}/messages,发送消息 (P),
+P系列,p4,実績確認,36,GET,/api/v1/partners/results/{resultId}/pdf,下载PDF (P),
+B系列,b6/b7,被請求管理/被請求詳細,37,GET,/api/v1/billings/search,搜索账单 (B),
+共用,b6/b7,被請求管理/被請求詳細,38,GET,/api/v1/billings/{billingId},获取账单详情 (共用),是
+共用,b6/b7,被請求管理/被請求詳細,39,PUT,/api/v1/billings/{billingId},更新账单 (共用),是
+共用,b6/b7,被請求管理/被請求詳細,40,PUT,/api/v1/billings/{billingId}/status,更新账单状态 (共用),是
+B系列,b6/b7,被請求管理/被請求詳細,41,POST,/api/v1/billings/{billingId}/approve,批准账单 (B),
+B系列,b6/b7,被請求管理/被請求詳細,42,POST,/api/v1/billings/{billingId}/reject,拒绝账单 (B),
+B系列,b6/b7,被請求管理/被請求詳細,43,GET,/api/v1/billings/{billingId}/items,获取账单项目 (B),
+B系列,b6/b7,被請求管理/被請求詳細,44,GET,/api/v1/billings/{billingId}/documents,获取文档 (B),
+P系列,p5,請求検索,45,GET,/api/v1/partners/billings/search,搜索账单 (P),
+P系列,p5,請求検索,46,GET,/api/v1/partners/billings/{billingId},获取账单详情 (P),
+P系列,p5,請求検索,47,GET,/api/v1/partners/billings/{billingId}/download,下载账单 (P),
+P系列,p5,請求検索,48,POST,/api/v1/partners/billings/export,导出账单 (P),
+B系列,b8,CSVアップロード,49,POST,/api/v1/csv/upload,上传CSV文件,
+B系列,b8,CSVアップロード,50,POST,/api/v1/csv/upload/validate,验证CSV数据,
+B系列,b8,CSVアップロード,51,GET,/api/v1/csv/upload/{uploadId}/status,获取上传状态,
+B系列,b8,CSVアップロード,52,GET,/api/v1/csv/upload/{uploadId}/errors,获取错误列表,
+B系列,b8,CSVアップロード,53,POST,/api/v1/csv/upload/{uploadId}/confirm,确认导入,
+B系列,b8,CSVアップロード,54,POST,/api/v1/csv/upload/{uploadId}/cancel,取消上传,
+P系列,p6,情報アップロード,55,GET,/api/v1/partners/achievements/confirmed,获取已确认业绩 (P),
+P系列,p6,情報アップロード,56,GET,/api/v1/partners/bases,获取基地列表 (P),
+P系列,p6,情報アップロード,57,POST,/api/v1/partners/invoices/upload,上传请求书PDF (P),
+P系列,p6,情報アップロード,58,GET,/api/v1/partners/invoices,获取上传文件列表 (P),
+P系列,p6,情報アップロード,59,GET,/api/v1/partners/invoices/{invoiceId}/preview,获取预览URL (P),
+P系列,p6,情報アップロード,60,DELETE,/api/v1/partners/invoices/{invoiceId},删除上传文件 (P),
+P系列,p6,情報アップロード,61,POST,/api/v1/partners/invoices/{invoiceId}/send,发送请求书 (P),
+P系列,p6,情報アップロード,62,GET,/api/v1/partners/invoices/{invoiceId}/download,下载请求书 (P),
+P系列,p6,情報アップロード,63,GET,/api/v1/partners/messages,获取消息历史 (P),
+P系列,p6,情報アップロード,64,POST,/api/v1/partners/messages,发送消息 (P),
+P系列,p6,情報アップロード,65,GET,/api/v1/partners/messages/attachments/{attachmentId}/download,下载附件 (P),
+B系列,b11/b12/b13,輸送パートナーマスタ,66,GET,/api/v1/partners/search,搜索合作伙伴 (B),
+共用,b11/b12,輸送パートナーマスタ,67,GET,/api/v1/partners/{partnerId},获取合作伙伴详情 (共用),是
+B系列,b11/b12/b13,輸送パートナーマスタ,68,PUT,/api/v1/partners/{partnerId},更新合作伙伴 (B),
+B系列,b11/b12/b13,輸送パートナーマスタ,69,GET,/api/v1/partners/{partnerId}/users,获取公司用户列表 (B),
+B系列,b11/b12/b13,輸送パートナーマスタ,70,GET,/api/v1/partners/{partnerId}/users/{userId},获取用户详情 (B),
+B系列,b11/b12/b13,輸送パートナーマスタ,71,PUT,/api/v1/partners/{partnerId}/users/{userId},更新用户信息 (B),
+B系列,b11/b12/b13,輸送パートナーマスタ,72,POST,/api/v1/partners/{partnerId}/users/{userId}/reset-password,重置密码 (B),
+B系列,b14/b15,ベースアカウントマスタ,73,GET,/api/v1/accounts/search,搜索基础账户 (B),
+共用,b14/b15,ベースアカウントマスタ,74,GET,/api/v1/accounts/{accountId},获取账户详情 (共用),是
+B系列,b14/b15,ベースアカウントマスタ,75,PUT,/api/v1/accounts/{accountId},更新账户 (B),
+B系列,b14/b15,ベースアカウントマスタ,76,GET,/api/v1/accounts/{accountId}/permissions,获取权限列表 (B),
+B系列,b14/b15,ベースアカウントマスタ,77,PUT,/api/v1/accounts/{accountId}/roles,更新角色 (B),
+B系列,b14/b15,ベースアカウントマスタ,78,POST,/api/v1/accounts/{accountId}/activate,激活账户 (B),
+B系列,b14/b15,ベースアカウントマスタ,79,POST,/api/v1/accounts/{accountId}/deactivate,停用账户 (B),
+共用,p0/b0,共通ナビゲーション,80,GET,/api/v1/bases,获取基地列表,是
+共用,p0/b0,共通ナビゲーション,81,GET,/api/v1/actions/history,获取操作历史,是
+共用,p0/b0,共通ナビゲーション,82,GET,/api/v1/navigation/menu,获取导航菜单,是
+共用,p0/b0,共通ナビゲーション,83,GET,/api/v1/notifications,获取通知列表,是

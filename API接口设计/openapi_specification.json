@@ -1,0 +1,1332 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "大贺运输新系统 API",
+    "description": "大贺运输新系统前后端分离架构 - RESTful API规范\n\n说明:\n- B系列API: ベース側(Base)专用\n- P系列API: パートナー側(Partner)专用\n- 共用API: B/P系列共用\n\n统计:\n- 总条目: 96\n- 唯一API: 81\n- B系列专用: 41\n- P系列专用: 40\n- 共用: 13个API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Yamato Transport System"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1",
+      "description": "开发环境"
+    },
+    {
+      "url": "https://api.yamato-transport.com/api/v1",
+      "description": "生产环境"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {"name": "认证授权-B", "description": "认证授权 - Base侧专用"},
+    {"name": "认证授权-P", "description": "认证授权 - Partner侧专用"},
+    {"name": "认证授权-共用", "description": "认证授权 - B/P共用"},
+    {"name": "订单管理-B", "description": "订单管理 - Base侧专用"},
+    {"name": "订单管理-P", "description": "订单管理 - Partner侧专用"},
+    {"name": "订单管理-共用", "description": "订单管理 - B/P共用"},
+    {"name": "实绩管理-B", "description": "实绩管理 - Base侧专用"},
+    {"name": "实绩管理-P", "description": "实绩管理 - Partner侧专用"},
+    {"name": "账单管理-B", "description": "账单管理 - Base侧专用"},
+    {"name": "账单管理-P", "description": "账单管理 - Partner侧专用"},
+    {"name": "账单管理-共用", "description": "账单管理 - B/P共用"},
+    {"name": "CSV上传", "description": "CSV文件上传"},
+    {"name": "发票管理-P", "description": "发票管理 - Partner侧专用"},
+    {"name": "合作伙伴-B", "description": "合作伙伴管理 - Base侧专用"},
+    {"name": "合作伙伴-共用", "description": "合作伙伴管理 - B/P共用"},
+    {"name": "账户管理-B", "description": "账户管理 - Base侧专用"},
+    {"name": "账户管理-共用", "description": "账户管理 - B/P共用"},
+    {"name": "导航通知", "description": "导航菜单和通知"}
+  ],
+  "paths": {
+    "/auth/callback": {
+      "post": {
+        "tags": ["认证授权-B"],
+        "summary": "AzureAD回调处理 (B)",
+        "description": "Base侧 - 处理AzureAD OAuth回调",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {"code": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "登录成功"}}
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["认证授权-P"],
+        "summary": "合作伙伴登录 (P)",
+        "description": "パートナー侧 - 合作伙伴登录",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/LoginRequest"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "登录成功"}}
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["认证授权-共用"],
+        "summary": "刷新Token (共用)",
+        "description": "B/P共用 - 使用refresh token获取新access token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refreshToken"],
+                "properties": {"refreshToken": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "Token刷新成功"}}
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["认证授权-B"],
+        "summary": "登出 (B)",
+        "description": "Base侧 - 用户登出",
+        "responses": {"200": {"description": "登出成功"}}
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["认证授权-共用"],
+        "summary": "获取当前用户信息 (共用)",
+        "description": "B/P共用 - 获取当前登录用户信息",
+        "responses": {"200": {"description": "成功返回用户信息"}}
+      }
+    },
+    "/orders/search": {
+      "get": {
+        "tags": ["订单管理-共用"],
+        "summary": "搜索订单 (共用)",
+        "description": "B/P共用 - 根据条件搜索订单列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "status", "in": "query", "schema": {"type": "string"}},
+          {"name": "partnerId", "in": "query", "schema": {"type": "string"}},
+          {"name": "baseId", "in": "query", "schema": {"type": "string"}},
+          {"name": "startDate", "in": "query", "schema": {"type": "string"}},
+          {"name": "endDate", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回订单列表"}}
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "tags": ["订单管理-共用"],
+        "summary": "获取订单详情 (共用)",
+        "description": "B/P共用 - 根据订单ID获取详情",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回订单详情"}}
+      },
+      "put": {
+        "tags": ["订单管理-共用"],
+        "summary": "更新订单 (共用)",
+        "description": "B/P共用 - 更新订单信息",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/OrderUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "订单更新成功"}}
+      }
+    },
+    "/orders/{orderId}/status": {
+      "put": {
+        "tags": ["订单管理-共用"],
+        "summary": "更新订单状态 (共用)",
+        "description": "B/P共用 - 更新订单状态",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {"type": "string"},
+                  "remark": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "状态更新成功"}}
+      }
+    },
+    "/orders/{orderId}/cancel": {
+      "post": {
+        "tags": ["订单管理-B"],
+        "summary": "取消订单 (B)",
+        "description": "Base侧 - 取消订单",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "订单取消成功"}}
+      }
+    },
+    "/orders/{orderId}/accept": {
+      "post": {
+        "tags": ["订单管理-P"],
+        "summary": "接受订单 (P)",
+        "description": "パートナー侧 - 接受订单",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "订单接受成功"}}
+      }
+    },
+    "/orders/{orderId}/decline": {
+      "post": {
+        "tags": ["订单管理-P"],
+        "summary": "拒绝订单 (P)",
+        "description": "パートナー侧 - 拒绝订单",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {"reason": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "订单拒绝成功"}}
+      }
+    },
+    "/orders/{orderId}/complete": {
+      "post": {
+        "tags": ["订单管理-P"],
+        "summary": "完成订单 (P)",
+        "description": "パートナー侧 - 完成订单",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "订单完成成功"}}
+      }
+    },
+    "/orders/{orderId}/history": {
+      "get": {
+        "tags": ["订单管理-B"],
+        "summary": "获取操作历史 (B)",
+        "description": "Base侧 - 获取订单操作历史",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回操作历史"}}
+      }
+    },
+    "/orders/{orderId}/documents": {
+      "get": {
+        "tags": ["订单管理-共用"],
+        "summary": "获取文档列表 (共用)",
+        "description": "B/P共用 - 获取订单相关文档",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回文档列表"}}
+      },
+      "post": {
+        "tags": ["订单管理-B"],
+        "summary": "上传文档 (B)",
+        "description": "Base侧 - 上传订单文档",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "documentType": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "文档上传成功"}}
+      }
+    },
+    "/orders/{orderId}/messages": {
+      "get": {
+        "tags": ["订单管理-P"],
+        "summary": "获取消息 (P)",
+        "description": "パートナー侧 - 获取订单相关消息",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回消息列表"}}
+      },
+      "post": {
+        "tags": ["订单管理-P"],
+        "summary": "发送消息 (P)",
+        "description": "パートナー侧 - 发送消息",
+        "parameters": [
+          {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {"type": "string"},
+                  "attachments": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "消息发送成功"}}
+      }
+    },
+    "/completed-orders/search": {
+      "get": {
+        "tags": ["实绩管理-B"],
+        "summary": "搜索实绩 (B)",
+        "description": "Base侧 - 搜索实绩列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "yearMonth", "in": "query", "schema": {"type": "string"}},
+          {"name": "partnerId", "in": "query", "schema": {"type": "string"}},
+          {"name": "workType", "in": "query", "schema": {"type": "string"}},
+          {"name": "status", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回实绩列表"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}": {
+      "get": {
+        "tags": ["实绩管理-共用"],
+        "summary": "获取实绩详情 (共用)",
+        "description": "B/P共用 - 获取实绩详情",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回实绩详情"}}
+      },
+      "put": {
+        "tags": ["实绩管理-B"],
+        "summary": "更新实绩 (B)",
+        "description": "Base侧 - 更新实绩信息",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/PerformanceUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "实绩更新成功"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}/confirm": {
+      "post": {
+        "tags": ["实绩管理-B"],
+        "summary": "确认实绩 (B)",
+        "description": "Base侧 - 确认实绩",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "实绩确认成功"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}/reject": {
+      "post": {
+        "tags": ["实绩管理-B"],
+        "summary": "拒绝实绩 (B)",
+        "description": "Base侧 - 拒绝实绩",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {"reason": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "实绩拒绝成功"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}/documents": {
+      "get": {
+        "tags": ["实绩管理-B"],
+        "summary": "获取文档 (B)",
+        "description": "Base侧 - 获取实绩相关文档",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回文档列表"}}
+      },
+      "post": {
+        "tags": ["实绩管理-B"],
+        "summary": "上传文档 (B)",
+        "description": "Base侧 - 上传文档",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "documentType": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "文档上传成功"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}/documents/{docId}": {
+      "delete": {
+        "tags": ["实绩管理-B"],
+        "summary": "删除文档 (B)",
+        "description": "Base侧 - 删除文档",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "docId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "文档删除成功"}}
+      }
+    },
+    "/completed-orders/{completedOrderId}/history": {
+      "get": {
+        "tags": ["实绩管理-B"],
+        "summary": "获取历史 (B)",
+        "description": "Base侧 - 获取实绩操作历史",
+        "parameters": [
+          {"name": "completedOrderId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回历史记录"}}
+      }
+    },
+    "/partners/results": {
+      "get": {
+        "tags": ["实绩管理-P"],
+        "summary": "获取业绩列表 (P)",
+        "description": "パートナー侧 - 获取业绩列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "yearMonth", "in": "query", "schema": {"type": "string"}},
+          {"name": "baseId", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回业绩列表"}}
+      }
+    },
+    "/partners/results/{resultId}/daily-costs": {
+      "get": {
+        "tags": ["实绩管理-P"],
+        "summary": "获取日別傭車費 (P)",
+        "description": "パートナー侧 - 获取日別傭車費",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回日別傭車費列表"}}
+      }
+    },
+    "/partners/results/{resultId}/daily-costs/{costId}": {
+      "put": {
+        "tags": ["实绩管理-P"],
+        "summary": "更新日別傭車費 (P)",
+        "description": "パートナー侧 - 更新单个傭車費金额",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "costId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {"type": "number"},
+                  "remark": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "更新成功"}}
+      }
+    },
+    "/partners/results/{resultId}/instructions": {
+      "get": {
+        "tags": ["实绩管理-P"],
+        "summary": "获取指示書 (P)",
+        "description": "パートナー侧 - 获取指示書",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回指示書"}}
+      }
+    },
+    "/partners/results/{resultId}/confirm": {
+      "post": {
+        "tags": ["实绩管理-P"],
+        "summary": "确认业绩 (P)",
+        "description": "パートナー侧 - 确认业绩",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "confirmedIds": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "确认成功"}}
+      }
+    },
+    "/partners/results/{resultId}/inquiry": {
+      "post": {
+        "tags": ["实绩管理-P"],
+        "summary": "确认请求 (P)",
+        "description": "パートナー侧 - 提交确认请求",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {"reason": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "请求提交成功"}}
+      }
+    },
+    "/partners/results/{resultId}/messages": {
+      "get": {
+        "tags": ["实绩管理-P"],
+        "summary": "获取消息 (P)",
+        "description": "パートナー侧 - 获取业绩相关消息",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回消息列表"}}
+      },
+      "post": {
+        "tags": ["实绩管理-P"],
+        "summary": "发送消息 (P)",
+        "description": "パートナー侧 - 发送消息",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {"type": "string"},
+                  "attachments": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "消息发送成功"}}
+      }
+    },
+    "/partners/results/{resultId}/pdf": {
+      "get": {
+        "tags": ["实绩管理-P"],
+        "summary": "下载PDF (P)",
+        "description": "パートナー侧 - 下载业绩PDF",
+        "parameters": [
+          {"name": "resultId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF文件下载",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/billings/search": {
+      "get": {
+        "tags": ["账单管理-B"],
+        "summary": "搜索账单 (B)",
+        "description": "Base侧 - 搜索账单列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "yearMonth", "in": "query", "schema": {"type": "string"}},
+          {"name": "partnerId", "in": "query", "schema": {"type": "string"}},
+          {"name": "status", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账单列表"}}
+      }
+    },
+    "/billings/{billingId}": {
+      "get": {
+        "tags": ["账单管理-共用"],
+        "summary": "获取账单详情 (共用)",
+        "description": "B/P共用 - 获取账单详情",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账单详情"}}
+      },
+      "put": {
+        "tags": ["账单管理-共用"],
+        "summary": "更新账单 (共用)",
+        "description": "B/P共用 - 更新账单信息",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/BillingUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "账单更新成功"}}
+      }
+    },
+    "/billings/{billingId}/status": {
+      "put": {
+        "tags": ["账单管理-共用"],
+        "summary": "更新账单状态 (共用)",
+        "description": "B/P共用 - 更新账单状态",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {"status": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "状态更新成功"}}
+      }
+    },
+    "/billings/{billingId}/approve": {
+      "post": {
+        "tags": ["账单管理-B"],
+        "summary": "批准账单 (B)",
+        "description": "Base侧 - 批准账单",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "账单批准成功"}}
+      }
+    },
+    "/billings/{billingId}/reject": {
+      "post": {
+        "tags": ["账单管理-B"],
+        "summary": "拒绝账单 (B)",
+        "description": "Base侧 - 拒绝账单",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {"reason": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "账单拒绝成功"}}
+      }
+    },
+    "/billings/{billingId}/items": {
+      "get": {
+        "tags": ["账单管理-B"],
+        "summary": "获取账单项目 (B)",
+        "description": "Base侧 - 获取账单项目列表",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账单项目"}}
+      }
+    },
+    "/billings/{billingId}/documents": {
+      "get": {
+        "tags": ["账单管理-B"],
+        "summary": "获取文档 (B)",
+        "description": "Base侧 - 获取账单相关文档",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回文档列表"}}
+      }
+    },
+    "/partners/billings/search": {
+      "get": {
+        "tags": ["账单管理-P"],
+        "summary": "搜索账单 (P)",
+        "description": "パートナー侧 - 搜索自己的账单",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "yearMonth", "in": "query", "schema": {"type": "string"}},
+          {"name": "status", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账单列表"}}
+      }
+    },
+    "/partners/billings/{billingId}": {
+      "get": {
+        "tags": ["账单管理-P"],
+        "summary": "获取账单详情 (P)",
+        "description": "パートナー侧 - 获取账单详情",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账单详情"}}
+      }
+    },
+    "/partners/billings/{billingId}/download": {
+      "get": {
+        "tags": ["账单管理-P"],
+        "summary": "下载账单 (P)",
+        "description": "パートナー侧 - 下载账单PDF",
+        "parameters": [
+          {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "账单文件下载"}}
+      }
+    },
+    "/partners/billings/export": {
+      "post": {
+        "tags": ["账单管理-P"],
+        "summary": "导出账单 (P)",
+        "description": "パートナー侧 - 导出账单",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "yearMonth": {"type": "string"},
+                  "format": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "账单导出成功"}}
+      }
+    },
+    "/csv/upload": {
+      "post": {
+        "tags": ["CSV上传"],
+        "summary": "上传CSV文件",
+        "description": "上传CSV文件进行数据导入",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "uploadMode": {"type": "string", "enum": ["ADD", "OVERWRITE"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "CSV上传成功"}}
+      }
+    },
+    "/csv/upload/validate": {
+      "post": {
+        "tags": ["CSV上传"],
+        "summary": "验证CSV数据",
+        "description": "验证已上传的CSV数据",
+        "parameters": [
+          {"name": "uploadId", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "验证完成"}}
+      }
+    },
+    "/csv/upload/{uploadId}/status": {
+      "get": {
+        "tags": ["CSV上传"],
+        "summary": "获取上传状态",
+        "description": "获取CSV上传处理状态",
+        "parameters": [
+          {"name": "uploadId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回上传状态"}}
+      }
+    },
+    "/csv/upload/{uploadId}/errors": {
+      "get": {
+        "tags": ["CSV上传"],
+        "summary": "获取错误列表",
+        "description": "获取CSV上传错误详情",
+        "parameters": [
+          {"name": "uploadId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回错误列表"}}
+      }
+    },
+    "/csv/upload/{uploadId}/confirm": {
+      "post": {
+        "tags": ["CSV上传"],
+        "summary": "确认导入",
+        "description": "确认CSV数据导入",
+        "parameters": [
+          {"name": "uploadId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "确认成功"}}
+      }
+    },
+    "/csv/upload/{uploadId}/cancel": {
+      "post": {
+        "tags": ["CSV上传"],
+        "summary": "取消上传",
+        "description": "取消CSV上传",
+        "parameters": [
+          {"name": "uploadId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "取消成功"}}
+      }
+    },
+    "/partners/achievements/confirmed": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "获取已确认业绩 (P)",
+        "description": "パートナー侧 - 获取已确认业绩列表",
+        "responses": {"200": {"description": "成功返回已确认业绩"}}
+      }
+    },
+    "/partners/bases": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "获取基地列表 (P)",
+        "description": "パートナー侧 - 获取关联基地列表",
+        "responses": {"200": {"description": "成功返回基地列表"}}
+      }
+    },
+    "/partners/invoices/upload": {
+      "post": {
+        "tags": ["发票管理-P"],
+        "summary": "上传请求书PDF (P)",
+        "description": "パートナー侧 - 上传请求书",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "baseId": {"type": "string"},
+                  "targetMonth": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "上传成功"}}
+      }
+    },
+    "/partners/invoices": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "获取上传文件列表 (P)",
+        "description": "パートナー侧 - 获取已上传文件列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "成功返回文件列表"}}
+      }
+    },
+    "/partners/invoices/{invoiceId}/preview": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "获取预览URL (P)",
+        "description": "パートナー侧 - 获取文件预览链接",
+        "parameters": [
+          {"name": "invoiceId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回预览URL"}}
+      }
+    },
+    "/partners/invoices/{invoiceId}": {
+      "delete": {
+        "tags": ["发票管理-P"],
+        "summary": "删除上传文件 (P)",
+        "description": "パートナー侧 - 删除上传的文件",
+        "parameters": [
+          {"name": "invoiceId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "删除成功"}}
+      }
+    },
+    "/partners/invoices/{invoiceId}/send": {
+      "post": {
+        "tags": ["发票管理-P"],
+        "summary": "发送请求书 (P)",
+        "description": "パートナー侧 - 发送请求书给基地",
+        "parameters": [
+          {"name": "invoiceId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "发送成功"}}
+      }
+    },
+    "/partners/invoices/{invoiceId}/download": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "下载请求书 (P)",
+        "description": "パートナー侧 - 下载请求书PDF",
+        "parameters": [
+          {"name": "invoiceId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "文件下载"}}
+      }
+    },
+    "/partners/messages": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "获取消息历史 (P)",
+        "description": "パートナー侧 - 获取消息交流历史",
+        "parameters": [
+          {"name": "baseId", "in": "query", "schema": {"type": "string"}},
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "成功返回消息列表"}}
+      },
+      "post": {
+        "tags": ["发票管理-P"],
+        "summary": "发送消息 (P)",
+        "description": "パートナー侧 - 发送消息",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "baseId": {"type": "string"},
+                  "content": {"type": "string"},
+                  "attachments": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "消息发送成功"}}
+      }
+    },
+    "/partners/messages/attachments/{attachmentId}/download": {
+      "get": {
+        "tags": ["发票管理-P"],
+        "summary": "下载附件 (P)",
+        "description": "パートナー侧 - 下载消息附件",
+        "parameters": [
+          {"name": "attachmentId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "附件下载"}}
+      }
+    },
+    "/partners/search": {
+      "get": {
+        "tags": ["合作伙伴-B"],
+        "summary": "搜索合作伙伴 (B)",
+        "description": "Base侧 - 搜索合作伙伴",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "keyword", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回合作伙伴列表"}}
+      }
+    },
+    "/partners/{partnerId}": {
+      "get": {
+        "tags": ["合作伙伴-共用"],
+        "summary": "获取合作伙伴详情 (共用)",
+        "description": "B/P共用 - 获取合作伙伴详情",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回合作伙伴详情"}}
+      },
+      "put": {
+        "tags": ["合作伙伴-B"],
+        "summary": "更新合作伙伴 (B)",
+        "description": "Base侧 - 更新合作伙伴信息",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/PartnerUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "合作伙伴更新成功"}}
+      }
+    },
+    "/partners/{partnerId}/users": {
+      "get": {
+        "tags": ["合作伙伴-B"],
+        "summary": "获取公司用户列表 (B)",
+        "description": "Base侧 - 获取合作伙伴的用户列表",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回用户列表"}}
+      }
+    },
+    "/partners/{partnerId}/users/{userId}": {
+      "get": {
+        "tags": ["合作伙伴-B"],
+        "summary": "获取用户详情 (B)",
+        "description": "Base侧 - 获取用户详情",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "userId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回用户详情"}}
+      },
+      "put": {
+        "tags": ["合作伙伴-B"],
+        "summary": "更新用户信息 (B)",
+        "description": "Base侧 - 更新用户信息",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "userId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/UserUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "用户更新成功"}}
+      }
+    },
+    "/partners/{partnerId}/users/{userId}/reset-password": {
+      "post": {
+        "tags": ["合作伙伴-B"],
+        "summary": "重置密码 (B)",
+        "description": "Base侧 - 重置用户密码",
+        "parameters": [
+          {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "userId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "密码重置成功"}}
+      }
+    },
+    "/accounts/search": {
+      "get": {
+        "tags": ["账户管理-B"],
+        "summary": "搜索基础账户 (B)",
+        "description": "Base侧 - 搜索基础账户",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "keyword", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账户列表"}}
+      }
+    },
+    "/accounts/{accountId}": {
+      "get": {
+        "tags": ["账户管理-共用"],
+        "summary": "获取账户详情 (共用)",
+        "description": "B/P共用 - 获取账户详情",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回账户详情"}}
+      },
+      "put": {
+        "tags": ["账户管理-B"],
+        "summary": "更新账户 (B)",
+        "description": "Base侧 - 更新账户信息",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/AccountUpdateDTO"}
+            }
+          }
+        },
+        "responses": {"200": {"description": "账户更新成功"}}
+      }
+    },
+    "/accounts/{accountId}/permissions": {
+      "get": {
+        "tags": ["账户管理-B"],
+        "summary": "获取权限列表 (B)",
+        "description": "Base侧 - 获取账户权限列表",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回权限列表"}}
+      }
+    },
+    "/accounts/{accountId}/roles": {
+      "put": {
+        "tags": ["账户管理-B"],
+        "summary": "更新角色 (B)",
+        "description": "Base侧 - 更新账户角色",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roleIds": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "角色更新成功"}}
+      }
+    },
+    "/accounts/{accountId}/activate": {
+      "post": {
+        "tags": ["账户管理-B"],
+        "summary": "激活账户 (B)",
+        "description": "Base侧 - 激活账户",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "账户激活成功"}}
+      }
+    },
+    "/accounts/{accountId}/deactivate": {
+      "post": {
+        "tags": ["账户管理-B"],
+        "summary": "停用账户 (B)",
+        "description": "Base侧 - 停用账户",
+        "parameters": [
+          {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "账户停用成功"}}
+      }
+    },
+    "/bases": {
+      "get": {
+        "tags": ["导航通知"],
+        "summary": "获取基地列表",
+        "description": "获取所有基地列表",
+        "responses": {"200": {"description": "成功返回基地列表"}}
+      }
+    },
+    "/actions/history": {
+      "get": {
+        "tags": ["导航通知"],
+        "summary": "获取操作历史",
+        "description": "获取系统操作历史记录",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "startDate", "in": "query", "schema": {"type": "string"}},
+          {"name": "endDate", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "成功返回操作历史"}}
+      }
+    },
+    "/navigation/menu": {
+      "get": {
+        "tags": ["导航通知"],
+        "summary": "获取导航菜单",
+        "description": "获取当前用户的导航菜单",
+        "responses": {"200": {"description": "成功返回导航菜单"}}
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": ["导航通知"],
+        "summary": "获取通知列表",
+        "description": "获取当前用户的通知列表",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+          {"name": "unreadOnly", "in": "query", "schema": {"type": "boolean"}}
+        ],
+        "responses": {"200": {"description": "成功返回通知列表"}}
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {"type": "string", "format": "email"},
+          "password": {"type": "string", "format": "password"}
+        }
+      },
+      "OrderUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string"},
+          "remark": {"type": "string"}
+        }
+      },
+      "PerformanceUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "remark": {"type": "string"},
+          "amount": {"type": "number"}
+        }
+      },
+      "BillingUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string"},
+          "remark": {"type": "string"}
+        }
+      },
+      "PartnerUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "partnerName": {"type": "string"},
+          "contactPerson": {"type": "string"},
+          "contactEmail": {"type": "string"},
+          "contactPhone": {"type": "string"}
+        }
+      },
+      "UserUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "userName": {"type": "string"},
+          "email": {"type": "string", "format": "email"},
+          "phone": {"type": "string"}
+        }
+      },
+      "AccountUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "accountName": {"type": "string"},
+          "email": {"type": "string", "format": "email"},
+          "isActive": {"type": "boolean"}
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Authorization header using Bearer tokens"
+      }
+    }
+  },
+  "security": [
+    {"bearerAuth": []}
+  ]
+}

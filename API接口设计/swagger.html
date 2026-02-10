@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大贺运输新系统 - Swagger UI</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css">
+    <style>
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+    <script>
+        const spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "大贺运输新系统 API",
+                "version": "1.0.0",
+                "description": "Yamato Transport System - RESTful API Documentation"
+            },
+            "servers": [
+                {"url": "http://localhost:8080/api/v1", "description": "Local Development"},
+                {"url": "https://dev-api.example.com/api/v1", "description": "Development"},
+                {"url": "https://api.example.com/api/v1", "description": "Production"}
+            ],
+            "paths": {
+                "/auth/callback": {
+                    "post": {
+                        "tags": ["认证授权-B"],
+                        "summary": "AzureAD回调处理 (B)",
+                        "description": "Base侧 - 处理AzureAD OAuth回调",
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "required": ["code"],
+                                        "properties": {"code": {"type": "string"}}
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "登录成功"}}
+                    }
+                },
+                "/auth/login": {
+                    "post": {
+                        "tags": ["认证授权-P"],
+                        "summary": "合作伙伴登录 (P)",
+                        "description": "パートナー侧 - 合作伙伴登录",
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/LoginRequest"}
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "登录成功"}}
+                    }
+                },
+                "/auth/refresh": {
+                    "post": {
+                        "tags": ["认证授权-共用"],
+                        "summary": "刷新Token (共用)",
+                        "description": "B/P共用 - 使用refresh token获取新access token",
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "required": ["refreshToken"],
+                                        "properties": {"refreshToken": {"type": "string"}}
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "Token刷新成功"}}
+                    }
+                },
+                "/users/me": {
+                    "get": {
+                        "tags": ["认证授权-共用"],
+                        "summary": "获取当前用户信息 (共用)",
+                        "description": "B/P共用 - 获取当前登录用户信息",
+                        "responses": {"200": {"description": "成功返回用户信息"}}
+                    }
+                },
+                "/orders/search": {
+                    "get": {
+                        "tags": ["订单管理-共用"],
+                        "summary": "搜索订单 (共用)",
+                        "description": "B/P共用 - 根据条件搜索订单列表",
+                        "parameters": [
+                            {"name": "page", "in": "query", "schema": {"type": "integer"}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer"}},
+                            {"name": "status", "in": "query", "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回订单列表"}}
+                    }
+                },
+                "/orders/{orderId}": {
+                    "get": {
+                        "tags": ["订单管理-共用"],
+                        "summary": "获取订单详情 (共用)",
+                        "description": "B/P共用 - 根据订单ID获取详情",
+                        "parameters": [
+                            {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回订单详情"}}
+                    },
+                    "put": {
+                        "tags": ["订单管理-共用"],
+                        "summary": "更新订单 (共用)",
+                        "description": "B/P共用 - 更新订单信息",
+                        "parameters": [
+                            {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/OrderUpdateDTO"}
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "订单更新成功"}}
+                    }
+                },
+                "/orders/{orderId}/status": {
+                    "put": {
+                        "tags": ["订单管理-共用"],
+                        "summary": "更新订单状态 (共用)",
+                        "description": "B/P共用 - 更新订单状态",
+                        "parameters": [
+                            {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "status": {"type": "string"},
+                                            "remark": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "状态更新成功"}}
+                    }
+                },
+                "/orders/{orderId}/documents": {
+                    "get": {
+                        "tags": ["订单管理-共用"],
+                        "summary": "获取文档列表 (共用)",
+                        "description": "B/P共用 - 获取订单相关文档",
+                        "parameters": [
+                            {"name": "orderId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回文档列表"}}
+                    }
+                },
+                "/billings/search": {
+                    "get": {
+                        "tags": ["账单管理-B"],
+                        "summary": "搜索账单 (B)",
+                        "description": "Base侧 - 搜索账单列表",
+                        "parameters": [
+                            {"name": "page", "in": "query", "schema": {"type": "integer"}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回账单列表"}}
+                    }
+                },
+                "/billings/{billingId}": {
+                    "get": {
+                        "tags": ["账单管理-共用"],
+                        "summary": "获取账单详情 (共用)",
+                        "description": "B/P共用 - 获取账单详情",
+                        "parameters": [
+                            {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回账单详情"}}
+                    },
+                    "put": {
+                        "tags": ["账单管理-共用"],
+                        "summary": "更新账单 (共用)",
+                        "description": "B/P共用 - 更新账单信息",
+                        "parameters": [
+                            {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/BillingUpdateDTO"}
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "账单更新成功"}}
+                    }
+                },
+                "/billings/{billingId}/status": {
+                    "put": {
+                        "tags": ["账单管理-共用"],
+                        "summary": "更新账单状态 (共用)",
+                        "description": "B/P共用 - 更新账单状态",
+                        "parameters": [
+                            {"name": "billingId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {"status": {"type": "string"}}
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "状态更新成功"}}
+                    }
+                },
+                "/partners/{partnerId}": {
+                    "get": {
+                        "tags": ["合作伙伴-共用"],
+                        "summary": "获取合作伙伴详情 (共用)",
+                        "description": "B/P共用 - 获取合作伙伴详情",
+                        "parameters": [
+                            {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回合作伙伴详情"}}
+                    },
+                    "put": {
+                        "tags": ["合作伙伴-B"],
+                        "summary": "更新合作伙伴 (B)",
+                        "description": "Base侧 - 更新合作伙伴信息",
+                        "parameters": [
+                            {"name": "partnerId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/PartnerUpdateDTO"}
+                                }
+                            }
+                        },
+                        "responses": {"200": {"description": "合作伙伴更新成功"}}
+                    }
+                },
+                "/accounts/{accountId}": {
+                    "get": {
+                        "tags": ["账户管理-共用"],
+                        "summary": "获取账户详情 (共用)",
+                        "description": "B/P共用 - 获取账户详情",
+                        "parameters": [
+                            {"name": "accountId", "in": "path", "required": true, "schema": {"type": "string"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回账户详情"}}
+                    }
+                },
+                "/bases": {
+                    "get": {
+                        "tags": ["导航通知"],
+                        "summary": "获取基地列表",
+                        "description": "获取所有基地列表",
+                        "responses": {"200": {"description": "成功返回基地列表"}}
+                    }
+                },
+                "/navigation/menu": {
+                    "get": {
+                        "tags": ["导航通知"],
+                        "summary": "获取导航菜单",
+                        "description": "获取当前用户可访问的导航菜单",
+                        "responses": {"200": {"description": "成功返回导航菜单"}}
+                    }
+                },
+                "/notifications": {
+                    "get": {
+                        "tags": ["导航通知"],
+                        "summary": "获取通知列表",
+                        "description": "获取当前用户的通知列表",
+                        "parameters": [
+                            {"name": "page", "in": "query", "schema": {"type": "integer"}},
+                            {"name": "pageSize", "in": "query", "schema": {"type": "integer"}}
+                        ],
+                        "responses": {"200": {"description": "成功返回通知列表"}}
+                    }
+                }
+            },
+            "components": {
+                "securitySchemes": {
+                    "bearerAuth": {
+                        "type": "http",
+                        "scheme": "bearer",
+                        "bearerFormat": "JWT"
+                    }
+                },
+                "schemas": {
+                    "LoginRequest": {
+                        "type": "object",
+                        "required": ["username", "password"],
+                        "properties": {
+                            "username": {"type": "string"},
+                            "password": {"type": "string", "format": "password"}
+                        }
+                    },
+                    "OrderUpdateDTO": {
+                        "type": "object",
+                        "properties": {
+                            "status": {"type": "string"},
+                            "remark": {"type": "string"}
+                        }
+                    },
+                    "BillingUpdateDTO": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {"type": "number"},
+                            "remark": {"type": "string"}
+                        }
+                    },
+                    "PartnerUpdateDTO": {
+                        "type": "object",
+                        "properties": {
+                            "companyName": {"type": "string"},
+                            "contactEmail": {"type": "string", "format": "email"},
+                            "phone": {"type": "string"}
+                        }
+                    }
+                }
+            },
+            "security": [{"bearerAuth": []}]
+        };
+        
+        window.onload = function() {
+            SwaggerUIBundle({
+                spec: spec,
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                filter: true,
+                showRequestDuration: true
+            });
+        };
+    </script>
+</body>
+</html>
